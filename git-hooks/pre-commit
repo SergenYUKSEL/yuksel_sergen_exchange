@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Git Pre-commit Hook
+# Valide qu'aucun console.log, console.table ou console.warn ne subsiste dans le code
+# Met en évidence les //TODO: avec nom de fichier et numéro de ligne
+
+echo "Validation du code en cours..."
+
+# Couleurs pour l'affichage
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Variables pour compter les erreurs
+console_errors=0
+todo_count=0
+
+# Fonction pour vérifier les console.log/table/warn
+check_console_statements() {
+    echo "Verification des console.log/table/warn..."
+    
+    # Recherche des console.log, console.table, console.warn dans les fichiers modifiés (hors commentaires)
+    console_files=""
+    for file in $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|ts|jsx|tsx)$'); do
+        if grep -E 'console\.(log|table|warn)' "$file" | grep -v '^[[:space:]]*//' > /dev/null 2>&1; then
+            console_files="$console_files $file"
+        fi
+    done
+    
+    if [ ! -z "$console_files" ]; then
+        echo -e "${RED}ERREUR: Des console.log/table/warn ont ete trouves dans les fichiers suivants:${NC}"
+        for file in $console_files; do
+            echo -e "${RED}  Fichier: $file${NC}"
+            # Afficher les lignes spécifiques avec numéros
+            git diff --cached "$file" | grep -n -E 'console\.(log|table|warn)' | while read line; do
+                echo -e "${RED}    $line${NC}"
+            done
+            console_errors=$((console_errors + 1))
+        done
+        echo ""
+    else
+        echo -e "${GREEN}Aucun console.log/table/warn detecte${NC}"
+    fi
+}
+
+# Fonction pour vérifier les //TODO:
+check_todo_comments() {
+    echo "Verification des //TODO:..."
+    
+    # Recherche des //TODO: dans les fichiers modifiés
+    todo_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|ts|jsx|tsx)$' | xargs grep -l -E '//\s*TODO:' 2>/dev/null || true)
+    
+    if [ ! -z "$todo_files" ]; then
+        echo -e "${YELLOW}ATTENTION: Des //TODO: ont ete trouves dans les fichiers suivants:${NC}"
+        for file in $todo_files; do
+            echo -e "${YELLOW}  Fichier: $file${NC}"
+            # Afficher les lignes spécifiques avec numéros
+            git diff --cached "$file" | grep -n -E '//\s*TODO:' | while read line; do
+                echo -e "${YELLOW}    $line${NC}"
+            done
+            todo_count=$((todo_count + 1))
+        done
+        echo ""
+    else
+        echo -e "${GREEN}Aucun //TODO: detecte${NC}"
+    fi
+}
+
+# Exécution des vérifications
+check_console_statements
+check_todo_comments
+
+# Résumé final
+echo "Resume de la validation:"
+echo -e "  Console.log/table/warn: ${RED}$console_errors erreur(s)${NC}"
+echo -e "  //TODO: detectes: ${YELLOW}$todo_count fichier(s)${NC}"
+
+# Décision finale
+if [ $console_errors -gt 0 ]; then
+    echo ""
+    echo -e "${RED}COMMIT REJETE: Veuillez supprimer tous les console.log/table/warn avant de commiter.${NC}"
+    echo -e "${RED}Conseil: Utilisez un logger approprie ou supprimez ces instructions de debug.${NC}"
+    exit 1
+fi
+
+if [ $todo_count -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}ATTENTION: Des //TODO: sont presents dans votre code.${NC}"
+    echo -e "${YELLOW}Conseil: Assurez-vous que ces TODO sont intentionnels et documentes.${NC}"
+    echo ""
+    read -p "Voulez-vous continuer le commit malgre les TODO? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Commit annule par l'utilisateur.${NC}"
+        exit 1
+    fi
+fi
+
+echo -e "${GREEN}Validation reussie! Commit autorise.${NC}"
+exit 0
