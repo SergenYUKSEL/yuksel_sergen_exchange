@@ -33,7 +33,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 const server = app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    // Delete console.log for accept commit
 });
 
 export default app;
