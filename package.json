@@ -11,9 +11,7 @@
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit",
     "test:functional": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/functional",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/e2e",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "install-hooks": "bash scripts/install-hooks.sh",
-    "postinstall": "npm run install-hooks"
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
   "keywords": ["cash-register", "change-calculator", "pos"],
   "author": "",

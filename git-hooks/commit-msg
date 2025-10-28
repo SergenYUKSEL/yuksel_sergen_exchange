@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Git Commit-msg Hook
+# Valide le format des messages de commit
+
+commit_msg=$(cat "$1")
+
+# Allow merge commits (e.g., "Merge branch 'staging' into production")
+if echo "$commit_msg" | grep -qE "^Merge (branch|remote-tracking branch|pull request)"; then
+    echo "Message de merge autorise!"
+    exit 0
+fi
+
+# Allow revert commits
+if echo "$commit_msg" | grep -qE "^Revert "; then
+    echo "Message de revert autorise!"
+    exit 0
+fi
+
+# Validate conventional commit format
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+
+if ! echo "$commit_msg" | grep -qE "$commit_regex"; then
+    echo "Format de message de commit invalide!"
+    echo ""
+    echo "Format attendu: type(scope): description"
+    echo ""
+    echo "Types autorises:"
+    echo "  feat     - Nouvelle fonctionnalite"
+    echo "  fix      - Correction de bug"
+    echo "  docs     - Documentation"
+    echo "  style    - Formatage, point-virgules manquants, etc."
+    echo "  refactor - Refactoring du code"
+    echo "  test     - Ajout ou modification de tests"
+    echo "  chore    - Taches de maintenance"
+    echo "  perf     - Amelioration des performances"
+    echo "  ci       - Configuration CI/CD"
+    echo "  build    - Systeme de build"
+    echo "  revert   - Annulation d'un commit precedent"
+    echo ""
+    echo "Exemples:"
+    echo "  feat(auth): add user login functionality"
+    echo "  fix(api): resolve database connection issue"
+    echo "  docs: update README with installation steps"
+    echo ""
+    echo "Note: Les messages de merge sont automatiquement autorises"
+    echo ""
+    exit 1
+fi
+
+echo "Message de commit valide!"
+exit 0
