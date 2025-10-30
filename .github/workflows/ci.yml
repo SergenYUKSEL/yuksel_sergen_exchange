@@ -5,6 +5,25 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      run_tests:
+        description: 'Run all tests'
+        required: false
+        default: true
+        type: boolean
+      custom_message:
+        description: 'Custom message for deployment'
+        required: false
+        type: string
 
 jobs:
   test:
@@ -17,21 +36,44 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Display workflow inputs
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        echo "🚀 Workflow triggered manually"
+        echo "Environment: ${{ inputs.environment }}"
+        echo "Run tests: ${{ inputs.run_tests }}"
+        echo "Custom message: ${{ inputs.custom_message }}"
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ matrix.node-version }}-
+          ${{ runner.os }}-node-
     
     - name: Install dependencies
       run: npm install
     
     - name: Run unit tests
+      if: github.event_name != 'workflow_dispatch' || inputs.run_tests == true
       run: npm run test:unit
     
     - name: Run functional tests
+      if: github.event_name != 'workflow_dispatch' || inputs.run_tests == true
       run: npm run test:functional
     
     - name: Run E2E tests
+      if: github.event_name != 'workflow_dispatch' || inputs.run_tests == true
       run: npm run test:e2e
     
     - name: Generate coverage report
@@ -55,6 +97,18 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-20.x-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-20.x-
+          ${{ runner.os }}-node-
     
     - name: Install dependencies
       run: npm install
@@ -69,16 +123,34 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Display deployment info
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        echo "🎯 Deploying to: ${{ inputs.environment }}"
+        echo "📝 Message: ${{ inputs.custom_message }}"
+    
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-20.x-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-20.x-
+          ${{ runner.os }}-node-
     
     - name: Install dependencies
       run: npm install
     
     - name: Build application
-      run: echo "Build completed successfully"
+      run: echo "Build completed successfully for ${{ inputs.environment || 'default' }} environment"
     
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
