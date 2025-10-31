@@ -7,11 +7,11 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit",
-    "test:functional": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/functional",
-    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/e2e",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:unit": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit",
+    "test:functional": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/functional",
+    "test:e2e": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/e2e",
+    "test:coverage": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
   "keywords": ["cash-register", "change-calculator", "pos"],
   "author": "",

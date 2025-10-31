@@ -1,5 +1,10 @@
 # 💰 Cash Register System
 
+[![CI/CD Pipeline](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/ci.yml/badge.svg)](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/ci.yml)
+[![Docker Build](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/docker-build-push.yml/badge.svg)](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/docker-build-push.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=SergenYUKSEL_yuksel_sergen_exchange&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=SergenYUKSEL_yuksel_sergen_exchange)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SergenYUKSEL_yuksel_sergen_exchange&metric=coverage)](https://sonarcloud.io/summary/new_code?id=SergenYUKSEL_yuksel_sergen_exchange)
+
 A professional cash register system with change calculation, built with Node.js, Express, and EJS.
 
 ## Features
@@ -12,26 +17,43 @@ A professional cash register system with change calculation, built with Node.js,
 - **Real-time Register Management**: Track cash register state
 - **Comprehensive Testing**: Unit, functional, and E2E tests
 - **CI/CD Pipeline**: Automated testing with GitHub Actions
+- **Docker Support**: Containerized deployment
 
 ## Installation
 
+### Local Development
+
 ```bash
 npm install
-```
-
-## Usage
-
-### Development
-```bash
-npm run dev
-```
-
-### Production
-```bash
 npm start
 ```
 
 The application will be available at `http://localhost:3000`
+
+### Docker
+
+#### Using Docker Compose (Recommended)
+
+```bash
+docker-compose up -d
+```
+
+#### Using Docker CLI
+
+```bash
+# Build image
+docker build -t cash-register .
+
+# Run container
+docker run -d -p 3000:3000 --name cash-register-app cash-register
+```
+
+#### Pull from DockerHub
+
+```bash
+docker pull <your-dockerhub-username>/cash-register:latest
+docker run -d -p 3000:3000 <your-dockerhub-username>/cash-register:latest
+```
 
 ## Testing
 
@@ -86,6 +108,40 @@ Get current cash register state.
 ### POST /api/reset-register
 Reset cash register to initial or custom state.
 
+## Docker Configuration
+
+### Environment Variables
+
+- `PORT`: Server port (default: 3000)
+- `NODE_ENV`: Environment mode (production/development)
+
+### Health Check
+
+The Docker image includes a health check that verifies the API is responding:
+- Interval: 30 seconds
+- Timeout: 3 seconds
+- Retries: 3
+
+## CI/CD
+
+### GitHub Actions Workflows
+
+1. **CI/CD Pipeline** (`.github/workflows/ci.yml`)
+   - Runs tests on Node.js 18.x and 20.x
+   - Generates coverage reports
+   - Builds artifacts
+
+2. **Docker Build and Push** (`.github/workflows/docker-build-push.yml`)
+   - Builds Docker image
+   - Tests the image
+   - Pushes to DockerHub on main/production branches
+
+### Required GitHub Secrets
+
+To enable DockerHub push, add these secrets to your repository:
+- `DOCKERHUB_USERNAME`: Your DockerHub username
+- `DOCKERHUB_TOKEN`: Your DockerHub access token
+
 ## Project Structure
 
 ```
@@ -104,9 +160,10 @@ Reset cash register to initial or custom state.
 │   ├── unit/                  # Unit tests
 │   ├── functional/            # Functional tests
 │   └── e2e/                   # End-to-end tests
-└── .github/
-    └── workflows/
-        └── ci.yml             # CI/CD pipeline
+├── .github/
+│   └── workflows/             # CI/CD pipelines
+├── Dockerfile                 # Docker configuration
+└── docker-compose.yml         # Docker Compose configuration
 ```
 
 ## Denominations Supported
@@ -126,26 +183,12 @@ Reset cash register to initial or custom state.
 - Customer gives: 20 + 5 TL
 - Change: 0 TL
 
-### Scenario 3: Preferred Denominations
-- Customer owes: 60 TL
-- Customer gives: 100 TL
-- Preferred: 20, 10 TL notes
-- Change: 40 TL (20 + 20 or 20 + 10 + 10)
-
 ## Coding Conventions
 
 - **Language**: English for all code references
 - **Naming**: camelCase
 - **ES Version**: ES6+
 - **Testing**: Comprehensive unit, functional, and E2E tests
-
-## CI/CD
-
-The project includes a GitHub Actions workflow that:
-- Runs tests on Node.js 18.x and 20.x
-- Generates coverage reports
-- Uploads coverage to Codecov
-- Builds and archives production artifacts
 
 ## License
 

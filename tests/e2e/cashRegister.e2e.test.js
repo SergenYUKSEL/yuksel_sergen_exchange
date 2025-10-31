@@ -1,11 +1,7 @@
 import request from 'supertest';
-import app, { server } from '../../src/app.js';
+import app from '../../src/app.js';
 
 describe('Cash Register - E2E Tests', () => {
-  
-  afterAll((done) => {
-    server.close(done);
-  });
   
   describe('Complete transaction workflow', () => {
     test('should complete full transaction from start to finish', async () => {

@@ -31,10 +31,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-    // Delete console.log for accept commit
-});
+// Start server only if not in test environment
+let server;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    // Server started successfully
+    if (process.env.NODE_ENV !== 'production') {
+      process.stdout.write(`Server running on http://localhost:${PORT}\n`);
+    }
+  });
+}
 
 export default app;
 export { server };
