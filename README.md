@@ -1,5 +1,10 @@
 # 💰 Cash Register System
 
+[![CI/CD Pipeline](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/ci.yml/badge.svg)](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/ci.yml)
+[![Docker Build](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/docker-build-push.yml/badge.svg)](https://github.com/SergenYUKSEL/yuksel_sergen_exchange/actions/workflows/docker-build-push.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=SergenYUKSEL_yuksel_sergen_exchange&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=SergenYUKSEL_yuksel_sergen_exchange)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SergenYUKSEL_yuksel_sergen_exchange&metric=coverage)](https://sonarcloud.io/summary/new_code?id=SergenYUKSEL_yuksel_sergen_exchange)
+
 A professional cash register system with change calculation, built with Node.js, Express, and EJS.
 
 ## Features
