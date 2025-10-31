@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, production ]
   release:
-    types: [published, created]
+    types: [published]
   workflow_dispatch:
 
 env:
@@ -113,10 +113,9 @@ jobs:
         images: ${{ env.DOCKER_IMAGE }}
         tags: |
           type=ref,event=branch
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha,prefix=sha-
-          type=raw,value=latest,enable={{is_default_branch}}
+          type=semver,pattern={{version}},enable=${{ github.event_name == 'release' }}
+          type=semver,pattern={{major}}.{{minor}},enable=${{ github.event_name == 'release' }}
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
