@@ -1,11 +1,7 @@
 import request from 'supertest';
-import app, { server } from '../../src/app.js';
+import app from '../../src/app.js';
 
 describe('Cash Register API - Functional Tests', () => {
-  
-  afterAll((done) => {
-    server.close(done);
-  });
   
   beforeEach(async () => {
     // Reset register before each test
